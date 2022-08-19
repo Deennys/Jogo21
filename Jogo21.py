@@ -9,16 +9,6 @@ def cria_baralho():
             bar.append(c)
     return bar
 
-def comprar(deck):
-    return deck.pop()
-
-def distribui(qtd, deck):
-    mao = []
-    while qtd > 0:
-        mao.append(comprar(deck))
-        qtd -= 1
-    return mao
-
 def embaralhar(deck):
     qtd = random.randint(200, 1000)
 
@@ -30,7 +20,16 @@ def embaralhar(deck):
         deck[i] = deck[j]
         deck[j] = aux
         qtd -= 1
+def comprar(deck):
+    return deck.pop()
 
+def distribui(qtd, deck):
+    mao = []
+    while qtd > 0:
+        mao.append(comprar(deck))
+        qtd = qtd - 1
+    return mao
+    
 def soma_pontos(mao):
     soma = 0
     for c in mao:
@@ -40,20 +39,64 @@ def soma_pontos(mao):
             soma = soma + c[0]
     return soma
 
+def formata_mao(mao):
+    texto = ''
+    for c in mao:
+        if c[0] == 1:
+            texto = texto + 'A' + c[1] + " "
+        elif c[0] == 11:
+            texto = texto + 'J' + c[1] + " "
+        elif c[0] == 12:
+            texto = texto + 'Q' + c[1] + " "   
+        elif c[0] == 13:
+            texto = texto + 'K' + c[1] + " "   
+        else:
+            texto = texto + str(c[0]) + c[1] + " "
+
+    return texto
+
+
 baralho = cria_baralho()
 embaralhar(baralho)
 
 humano = distribui(2, baralho)
 cpu = distribui(2, baralho)
-print(humano)
+pontoH = soma_pontos(humano)
+
+print(formata_mao(humano))
+
+print("Pontos: ", pontoH)
+
 resp = input("Quer mais cartas (s/n)?")
-while resp == 's':
+while resp == 's' and pontoH <= 21:
     c = comprar(baralho)
     humano.append(c)
-    print(humano)
-    resp = input("Quer mais cartas (s/n)?")
+    pontoH = soma_pontos(humano)
+
+    print(formata_mao(humano))
+
+    print("Pontos: ", pontoH)
+
+    if pontoH <= 21:
+        resp = input("Quer mais cartas (s/n)?")
 
 while soma_pontos(cpu) < 17:
     cpu.append(comprar(baralho))
 
-print(cpu)
+pontoH = soma_pontos(humano)
+pontoC = soma_pontos(cpu)
+
+print("Computador: ", formata_mao(cpu))
+
+print("Pontos: ", soma_pontos(cpu))
+
+if pontoH > 21:
+    print("O vencedor é o computador!")
+elif pontoH == pontoC:
+    print("Houve empate")
+elif pontoH <= 21 and pontoC > 21:
+    print("Parabéns, você venceu!")
+elif pontoH < pontoC:
+    print("O vencedor é o computador!")
+else:
+    print("Parabéns, você venceu!")
